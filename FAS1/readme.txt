@@ -1,162 +1,46 @@
-tftpds v2.5
+FAS1 (FlashAdvance Slot-1) v1.0
+by Smiths (smiths/AT/emuholic/DOT/com)
+http://www.emuholic.com
 ===========
-by Sten Larsson (stonebone@planetunreal.com)
-and Gustav Munkby (grddev@gmail.com)
+
+based off of tftpds v2.5 by Sten Larsson (stonebone@planetunreal.com) and Gustav Munkby (grddev@gmail.com)
 http://www.itstud.chalmers.se/~larssten/nds/
 http://forum.gbadev.org/viewtopic.php?t=8682
 
-
 About
 -----
-tftpds is a Nintendo DS application that recieves a file over
-the wireless network and programs your Flash Advance Pro flash cart
-inserted in the GBA slot. It can then boot .ds.gba and .gba-files.
-It can also read/write sram.
+Old FlashAdvance cartridges for the Gameboy Advance used a Parallel Port device for flashing files to the cartridge from a PC. It's hard to find a newer PC (especially a laptop) with a Parallel Port. Based off of tftpds, FAS1 (FlashAdvance Slot-1) lets you place Gameboy Advance games in a folder "GBA" on a Slot-1 device (M3/R4/SuperCard/G6) and flash those files to a FlashAdvance 256 cartridge (only model tested) sitting in Slot-2 of your Nintendo DS.
 
+Like tftpds, it uses Jeff Frohwein's GBA FLinker tool to do the writing, writing at a rate of 18s/meg. A full file (32 megs) takes about 9.5 minutes.
+
+Also, it allows you to backup Bank 1 of your SRAM (64KB) to the cartridge in Slot-1. Restoring to the Flash Advance's Bank 1 will be implemented shortly.
 
 Usage
 -----
-1. You need to have your Wifi Connection settings saved to firmware using
-   for example Mario Kart DS.
+1) FAS1flasher.nds can be put wherever you launch homebrew from on your Slot-1 Device. 
 
-2. Boot tftpds like any other homebrew application on the Nintendo DS.
+2) GBA ROMs (with extensions .gba [games] and .bin [Pogoshell] should be placed in a subfolder called "GBA" on your Slot-1 Device.
 
-3. Wait for "TFTP server ready..."
+3) Launch FAS1Flasher.nds and you'll be presented with a menu on the bottom screen showing GBA ROMs found on your Slot-1 Device.
 
-4. Transfer files to/from your PC using a TFTP client.
-   Examples using the tftp client from:
-   http://www.tftp-server.com/tftp-client.html
- 
-   a. Sending
+4) Selecting a title in the bottom menu will present you with on-screen information about the file, along with an estimated writing time.
 
-      This writes the file 1 Megabyte from the beginning of the cart:
+5) Press "Start" to begin flashing the file (currently it flashes it at the first position of the FlashAdvance cartridge (offset 0). Later versions may let you change the starting position to create a multi-rom cartridge. Honestly, you should be using PogoShell for multi-rom compilations anyway.
 
-        tftp -b1432 192.168.0.2 put tftpds.ds.gba rom/100000/
+Also, pressing "Select" will back up SRAM Bank 1 to a file called "BANK1.SAV" in the root of your Slot-1 device.
 
-      This writes the file tetattds.sav to the sram:
+Bugs/Limitations
+------
+Like tftpds, it only has been tested/writes to FlashAdvance Pro (aka Turbo FA). Support for other carts could be implemented. cartlib.c has the information for other cartridges, and flashcartfile.cpp contains the "file->write" command which is called from the main.cpp WriteRom() function.
+If you have any other flashcart, implement support for it and please submit the code! Those cartridges are still useful!
 
-        tftp -b1432 192.168.0.2 put tetattds.sav ram
-
-   b. Retrieving
-
-      This retrieves the sram:
-
-        tftp -b1432 192.168.0.2 get ram tetattds.sav
-
-5. The cart will be scanned for things that looks like bootable files.
-   Click on a file on the touch screen to boot it. The files will be
-   displayed as
-
-     <title>.<ds.gba or nds or gba> (<offset in hex>)
-
-
-Paths
------
-* To access flash cart:
-  /rom/<offset in hex>/<any filename>
-
-  The offset must be a multiple of 0x40000 bytes (256 kilobytes), because
-  this is the erase block size on the flash cart.
-  Examples: C0000, 100000
-
-* To access sram:
-  /ram/<any filename>
-
-
-Blocksize
----------
-The parameter "-b1432" above specifies the blocksize. It affects the
-transfer speed, and you can try different values. The value 1432 is suggested
-by RFC 1783, the document describing the protocol, and there is probably
-no point in using anything higher. Another value to try is 1024. The default
-value is 512.
-
-
-Gba menu
---------
-tftpds.ds.gba can be booted on a gba. It will then display a simple menu which
-allows you to boot gba programs on the flash cart. This is useful if you want
-to play a gba game on you Gameboy Player or to play a game that makes use of
-the gba link port (like PocketNES). Typically you will have tftpds.ds.gba as
-the first thing on your flash cart, and it will now work on both ds and gba.
-
-Implementation details: This works by appending a small multiboot menu rom to
-the end of tftpds.ds.gba. A custom loader is used with dsbuild that detects
-that it's a gba, copies the rom image to ram, and branches. This is possible
-since the loader is executed on ARM7, the same cpu as on the gba, and both
-Passme/Flashme and the gba boots the cart in the same way (by branching to
-0x8000000).
-
-
-Known issues
-------------
-* Only Flash Advance Pro (aka Turbo FA) is supported. Support for other carts
-  could be implemented but I don't have any to test. If you have any other
-  flashcart, implement support for it and send the changes to me, and then I
-  will include it in the next release. If you've got GBAMP, SuperCard, etc.
-  you should try bafio's "wifitransfer" instead:
-  http://bafio.drunkencoders.com/
-
-* Cannot retrieve files from flash cart.
-
-* There is an error printed after transfer when using the client in the
-  examples. It should be harmless though.
-
-* There is currently no way to delete files from sram
-
-
-Changelog
----------
-2.5 (?)
-  * Removed save system
-  * Compiles with current libnds
-
-2.4 beta (20070107)
-  * Added save system
-  * Implemented "blocksize" option.
-  * Rewrote code for booting programs. It's much simpler now.
-  * Disables wifi before booting
-  * Fixed code so that it compiles with cvs version of libnds.
-
-2.3 (20060801)
-  * Updated to work with latest devkitPro and dswifi
-  * Fixed a bug that erased too much on the cart if the file was a
-    multiple of 256 kb
-  * The path that curl sends seems to have changed
-  * You can now scroll the list of boot items
-
-2.1 (20060325)
-  * Added gba menu. It's now possible to boot on a gba.
-
-2.0 (20060303)
-  * A GUI which lists files on cart
-  * Boots gba files
-  * Read and write sram
-  * Using paths to select where to write
-  * Fixed a bug in dswifi which prevented large files from working correctly
-
-1.0 (20060222)
-  * Initial release
+Also, seeing as how it's been forever since I've coded, and basically am re-learning everything based on what I need done... the source is probably very messy(???).
 
 
 Thanks
 ------
-sgstair                For the wifi library
-                       http://akkit.org/dswifi/
+Sten Larsson 	       For getting the ball rolling with tftpds for flashing
+and Gustav Munkby      from within the DS, and the fwgui program.
 
 Jeff Frohwein          Flashcart code from GBA FLinker
                        http://www.devrs.com/gba/software.php#misc
-
-bafio                  Info on how to read the firmware settings
-                       http://forum.gbadev.org/viewtopic.php?p=68956#68956
-
-Infantile Paralysiser  Info on how to boot a file (MoonShell sources)
-                       http://mdxonline.dyndns.org/archives/nds/
-
-Martin Korth           The best source of information about the Nintendo DS
-                       http://nocash.emubase.de/gbatek.htm
-
-NDSTech Wiki           Information about flash carts
-                       http://www.bottledlight.com/ds/
-
-Patrick Kwong          Information about the "blocksize" option.
