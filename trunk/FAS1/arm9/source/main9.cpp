@@ -20,9 +20,11 @@
 
 #include "cartlib.h"
 #include "bootdialog.h"
+#include "savedialog.h"
 #include "filefactory.h"
 
 BootDialog* dialog = NULL;
+SaveDialog* dialog2 = NULL;
 
 // some functions needed by wifi lib
 extern "C" {
@@ -104,11 +106,10 @@ int main()
 	
 	FwGui::Driver gui;
 	
-	printf("Slot1 FlashAdvance Flasher v1.0\n");
+	printf("FlashAdvance Slot1 Flasher v1.2\n");
 	printf("-----------\n");
 	printf("Press SELECT to back up Bank 1\n");
-	printf("Press Y to write SRAM.SAV\n to Bank 1\n");
-	printf("Choose ROM to flash below\n");
+	printf("Press Y to switch menus\n");
 	printf("-----------\n");
 
 	try
@@ -116,8 +117,9 @@ int main()
 		// map gba cartridge to arm9
 		REG_EXMEMCNT &= ~0x80;
 		VisolySetFlashBaseAddress(0);
-
+		int di = 0; //ugly active gui checking, even = files, odd = saves
 		dialog = new BootDialog();
+		dialog2 = new SaveDialog();
 		gui.SetActiveDialog(dialog);
 			swiWaitForVBlank();
 			gui.Tick();
@@ -130,7 +132,22 @@ int main()
 			}
 			if(keysUp() & KEY_Y)
 			{
-				WriteSRAM();
+				//WriteSRAM();
+				if (di%2 == 0) { 
+				gui.SetActiveDialog(dialog); 
+				di++;
+				dialog->ScanSlot1();
+				dialog->RefreshSlot1Buttons();
+				dialog->Repaint();
+
+				}
+				else { 
+				gui.SetActiveDialog(dialog2); 
+				di++;
+				dialog2->ScanSlot1();
+				dialog2->RefreshSlot1Buttons();
+				dialog2->Repaint();
+				}
 			}
 			//Back up SRAM Bank 1 with SELECT - Smiths
 			if(keysDown() & KEY_SELECT)
@@ -143,9 +160,6 @@ int main()
 			}
 			swiWaitForVBlank();
 
-			dialog->ScanSlot1();
-			dialog->RefreshSlot1Buttons();
-			dialog->Repaint();
 		}
 		
 
@@ -164,7 +178,11 @@ int main()
 //Get that first 64KB! - Smiths
 void BackupSRAM() {
 
-FILE * savedata = fopen ("/bank1.sav", "wb");
+struct stat st;
+DIR_ITER* dir;
+dir = diropen ("/Saves/"); //Saves dir exist?
+if (!dir) { printf("\nCreating SAVES directory\n"); mkdir ("/Saves", 1); }
+FILE * savedata = fopen ("/saves/bank1.sav", "wb");
 printf("\nBacking up Bank 1\n");
 u8* start = SRAM_START; //Beginning of SRAM
 int bytes = 0;
@@ -186,64 +204,8 @@ while (start < bank1 - 1) {
 
 fclose (savedata);
 printf("\nDone!\n");
-printf("File: bank1.sav in root of Slot1\n");
+printf("File: /Saves/bank1.sav on Slot1\n");
 
-}
-
-//Write Bank1 SRAM - Smiths
-void WriteSRAM() {
-	FILE * savedata = fopen ("/sram.sav", "rb");
-	if (!savedata) { printf("\nFile \"SRAM.SAV\" not found!"); } 
-	else {
-		u8* start = SRAM_START; //Beginning of SRAM
-		int bytes = 0;
-		u8* bank1 = SRAM_START+65535; //64KB = bank1 (rest need bank switching I believe)
-		char strbuffer[8]; //only likes to work in blocks of 8 (1 byte at a time!)
-		printf("\nPress Start to write SRAM\n");
-		printf("Press \"B\" to Cancel\n");
-		printf("Timeout: \e[s    0 seconds");
-		int o = 0;
-		u16 time_left = 600; // 10 second countdown
-		s8 done = 0;
-	
-		while(!done)
-			{
-				printf("\e[u\e[0K%5u seconds", (time_left/60)+1);
-				vBlank();
-				scanKeys();
-				if(keysDown() & KEY_START) {
-				printf("\nWriting Bank 1\n");
-					printf("Written: \e[s    0 k");
-					while (start < bank1 - 1) {
-						VisolyModePreamble (); //Don't know if needed, FLinker has it though
-						fread((u8*)strbuffer,1,8,savedata); //write a byte of save to memory
-						memcpy(start, strbuffer, sizeof(strbuffer));
-						start += 8; //next byte, please
-						bytes += 8;
-						printf("\e[u\e[0K%5u k", bytes);
-					}
-					o = 0;
-					done = 1;
-				}
-				if(keysDown() & KEY_B) {
-					printf("\e[u\e[0K%5s\n", "Aborted!");
-					o = 0;
-					done = 1;
-				}
-				time_left--;
-	
-				if(time_left == 0) {
-				done = 1;
-				o = 1;
-				} 
-			}
-			if (o) {
-				printf("\e[u\e[0K%5s\n", "Timed Out!");
-			}
-
-		fclose (savedata);
-		printf("\nDone!\n");
-	}
 }
 
 void WriteROM(const char* filename) {

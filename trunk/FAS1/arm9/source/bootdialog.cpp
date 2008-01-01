@@ -15,7 +15,7 @@
 using namespace FwGui;
 
 BootDialog::BootDialog()
-:	Dialog("CHOOSE ROM TO FLASH", NUM_BUTTONS + 2),
+:	Dialog("ROM FLASH (Y SAVES)", NUM_BUTTONS + 2),
 	numItems(0),
 	scrollOffset(0)
 {
