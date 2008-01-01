@@ -1,4 +1,4 @@
-FAS1 (FlashAdvance Slot-1) v1.0
+FAS1 (FlashAdvance Slot-1) v1.2
 by Smiths (smiths/AT/emuholic/DOT/com)
 http://www.emuholic.com
 ===========
@@ -13,7 +13,7 @@ Old FlashAdvance cartridges for the Gameboy Advance used a Parallel Port device 
 
 Like tftpds, it uses Jeff Frohwein's GBA FLinker tool to do the writing, writing at a rate of 18s/meg. A full file (32 megs) takes about 9.5 minutes.
 
-Also, it allows you to backup Bank 1 of your SRAM (64KB) to the cartridge in Slot-1. Restoring to the Flash Advance's Bank 1 will be implemented shortly.
+Also, it allows you to backup Bank 1 of your SRAM (64KB) to the cartridge in Slot-1. Restoring to the Flash Advance's Bank 1 is also supported.
 
 Usage
 -----
@@ -28,6 +28,10 @@ Usage
 5) Press "Start" to begin flashing the file (currently it flashes it at the first position of the FlashAdvance cartridge (offset 0). Later versions may let you change the starting position to create a multi-rom cartridge. Honestly, you should be using PogoShell for multi-rom compilations anyway.
 
 Also, pressing "Select" will back up SRAM Bank 1 to a file called "BANK1.SAV" in the root of your Slot-1 device.
+
+Save Restoring
+------
+Pressing "Y" will switch between the ROM flashing and SAVE flashing menus. Saves must be put in a "SAVES" folder in the root of your Slot-1 device.  Saves are selected like ROMs, and are written to the first 64KB bank of SRAM on the FlashAdvance Pro cartridge.
 
 Bugs/Limitations
 ------
