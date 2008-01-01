@@ -42,10 +42,6 @@ If you have any other flashcart, implement support for it and please submit the 
 
 Also, seeing as how it's been forever since I've coded, and basically am re-learning everything based on what I need done... the source is probably very messy(???).
 
-ToDo
-------
-I'd like to implement a sub-menu system for savegame flashing.  But for right now, I'm using my NDS as if it's a parallel port Flash Advance Linker!
-
 Thanks
 ------
 Sten Larsson 	       For getting the ball rolling with tftpds for flashing
