@@ -36,6 +36,9 @@ If you have any other flashcart, implement support for it and please submit the 
 
 Also, seeing as how it's been forever since I've coded, and basically am re-learning everything based on what I need done... the source is probably very messy(???).
 
+ToDo
+------
+I'd like to implement a sub-menu system for savegame flashing.  But for right now, I'm using my NDS as if it's a parallel port Flash Advance Linker!
 
 Thanks
 ------
@@ -44,3 +47,7 @@ and Gustav Munkby      from within the DS, and the fwgui program.
 
 Jeff Frohwein          Flashcart code from GBA FLinker
                        http://www.devrs.com/gba/software.php#misc
+
+GuyFawkes	       Emuholic allows me to whore free stuff. Costis and JB helped
+Costis		       in #emuholic with random things as my head began to hurt.
+JustBurn
