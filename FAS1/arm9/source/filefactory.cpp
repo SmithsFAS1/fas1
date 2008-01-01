@@ -9,7 +9,7 @@ File* FileFactory::OpenFile(const char* filename, bool write)
 {
 	char dir[11];
 	int offset = 0;
-	printf("path: %s\n", filename);
+	//printf("path: %s\n", filename); //just prints offset, no need since it's always 000000
 	if(filename[0] == '/')
 	{
 		filename++;
