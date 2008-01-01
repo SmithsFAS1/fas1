@@ -1,6 +1,7 @@
 FAS1 (FlashAdvance Slot-1) v1.2
 by Smiths (smiths/AT/emuholic/DOT/com)
 http://www.emuholic.com
+Source SVN @ http://code.google.com/p/fas1/
 ===========
 
 based off of tftpds v2.5 by Sten Larsson (stonebone@planetunreal.com) and Gustav Munkby (grddev@gmail.com)
