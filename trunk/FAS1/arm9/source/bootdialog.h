@@ -10,6 +10,7 @@
 
 void WriteROM(const char* filename);
 void BackupSRAM();
+void WriteSRAM();
 void vBlank();
 
 struct BootItem

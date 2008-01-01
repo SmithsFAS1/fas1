@@ -34,7 +34,6 @@ $(TARGET).ds.gba	: $(TARGET).nds gbamenu/gbamenu_mb.gba loader/loader.bin
 	#padbin 512 $(TARGET).ds.gba
 	#cat $(TARGET).ds.gba fcs.img > $(TARGET)_fs.ds.gba
 	#dlditool fcsr.dldi $(TARGET)_fs.ds.gba
-	#dlditool mpcf.dldi $(TARGET).nds
 	
 #---------------------------------------------------------------------------------
 $(TARGET).nds	:	$(TARGET).arm7 $(TARGET).arm9
