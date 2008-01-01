@@ -27,11 +27,12 @@ Usage
 
 5) Press "Start" to begin flashing the file (currently it flashes it at the first position of the FlashAdvance cartridge (offset 0). Later versions may let you change the starting position to create a multi-rom cartridge. Honestly, you should be using PogoShell for multi-rom compilations anyway.
 
-Also, pressing "Select" will back up SRAM Bank 1 to a file called "BANK1.SAV" in the root of your Slot-1 device.
 
-Save Restoring
+SRAM Support
 ------
 Pressing "Y" will switch between the ROM flashing and SAVE flashing menus. Saves must be put in a "SAVES" folder in the root of your Slot-1 device.  Saves are selected like ROMs, and are written to the first 64KB bank of SRAM on the FlashAdvance Pro cartridge.
+
+Also, pressing "Select" will back up SRAM Bank 1 to a file called "BANK1.SAV" in a "SAVES" folder on your Slot-1 device.
 
 Bugs/Limitations
 ------
