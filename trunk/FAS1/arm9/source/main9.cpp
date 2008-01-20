@@ -54,7 +54,7 @@ int main()
 	printf("FlashAdvance Slot1 Flasher v1.4\n");
 	printf("-----------\n");
 	printf("Press SELECT to back up Bank 1\n");
-	printf("Press START to boot Slot-2\n");
+	printf("Press L+R+START to boot Slot-2\n");
 	printf("Press Y to switch menus\n");
 	printf("-----------\n");
 
@@ -72,9 +72,10 @@ int main()
 		while(true)
 		{
 			gui.Tick();
-			if(keysDown() & KEY_X)
+			if((keysHeld() & KEY_START | KEY_L | KEY_R) == (KEY_START | KEY_L | KEY_R))
 			{
-				//nada for X
+				VisolySetFlashBaseAddress(0);
+				BootGbaARM9();
 			}
 			if(keysDown() & KEY_Y)
 			{
@@ -97,11 +98,6 @@ int main()
 			if(keysUp() & KEY_SELECT)	 //Back up SRAM Bank 1 with SELECT - Smiths
 			{
 				BackupSRAM();
-			}
-			if(keysUp() & KEY_START) //Boot GBA cartridge
-			{
-				VisolySetFlashBaseAddress(0);
-				BootGbaARM9();
 			}
 			swiWaitForVBlank();
 		}
