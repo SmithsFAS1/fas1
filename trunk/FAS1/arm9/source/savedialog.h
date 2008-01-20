@@ -11,6 +11,8 @@
 void BackupSRAM();
 void WriteSRAM(const char* filename);
 void vBlank();
+void set_ram_start(int i);
+int fcSetSRamStart(int offset);
 
 struct SaveItem
 {

@@ -1,4 +1,4 @@
-FAS1 (FlashAdvance Slot-1) v1.2
+FAS1 (FlashAdvance Slot-1) v1.4
 by Smiths (smiths/AT/emuholic/DOT/com)
 http://www.emuholic.com
 Source SVN @ http://code.google.com/p/fas1/
@@ -8,6 +8,14 @@ based off of tftpds v2.5 by Sten Larsson (stonebone@planetunreal.com) and Gustav
 http://www.itstud.chalmers.se/~larssten/nds/
 http://forum.gbadev.org/viewtopic.php?t=8682
 
+----------------
++ ABOUT
++ HISTORY
++ USAGE
++ SRAM SUPPORT
++ BUGS/LIMITATIONS
+----------------
+
 About
 -----
 Old FlashAdvance cartridges for the Gameboy Advance used a Parallel Port device for flashing files to the cartridge from a PC. It's hard to find a newer PC (especially a laptop) with a Parallel Port. Based off of tftpds, FAS1 (FlashAdvance Slot-1) lets you place Gameboy Advance games in a folder "GBA" on a Slot-1 device (M3/R4/SuperCard/G6) and flash those files to a FlashAdvance 256 cartridge (only model tested) sitting in Slot-2 of your Nintendo DS.
@@ -15,6 +23,21 @@ Old FlashAdvance cartridges for the Gameboy Advance used a Parallel Port device 
 Like tftpds, it uses Jeff Frohwein's GBA FLinker tool to do the writing, writing at a rate of 18s/meg. A full file (32 megs) takes about 9.5 minutes.
 
 Also, it allows you to backup Bank 1 of your SRAM (64KB) to the cartridge in Slot-1. Restoring to the Flash Advance's Bank 1 is also supported.
+
+History
+------
+v1.4 - Boot me Back
++ Added Slot-2 booting with START
+
+v1.2 - SRAM Sub-menu
++ SRAM restoring added to separate menu
++ Scans for SRAM .SAV files in /SAVES directory
+
+v1.0 - Initial release
++ Flashes selected ROM to FAPro cartridge
++ Backs up SRAM bank 1 to Slot-1 device
++ Restores SRAM bank 1 from specific file
+
 
 Usage
 -----
@@ -37,8 +60,13 @@ Also, pressing "Select" will back up SRAM Bank 1 to a file called "BANK1.SAV" in
 
 Bugs/Limitations
 ------
-Like tftpds, it only has been tested/writes to FlashAdvance Pro (aka Turbo FA). Support for other carts could be implemented. cartlib.c has the information for other cartridges, and flashcartfile.cpp contains the "file->write" command which is called from the main.cpp WriteRom() function.
-If you have any other flashcart, implement support for it and please submit the code! Those cartridges are still useful!
+Like tftpds, it only has been tested/writes to FlashAdvance Pro (aka Turbo FA). Support for other carts could be implemented. If you have any other flashcart, implement support for it and please submit the code! Those cartridges are still useful!
+
+F2A Support is in UCON64, and the f2a.c file can be found here:
+http://www.koders.com/c/fidC5AEE87302951FF4854331F1B326B3ADEEC05D48.aspx
+Anyone willing to help on that?
+
+FlashCart writing speed seems to be capped by the FLinker routines. Everything seems to have to be done a byte at a time.
 
 Also, seeing as how it's been forever since I've coded, and basically am re-learning everything based on what I need done... the source is probably very messy(???).
 

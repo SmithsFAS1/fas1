@@ -35,6 +35,7 @@ public:
 	virtual void KeyDown();
 	virtual void KeyLeft();
 	virtual void KeyRight();
+	virtual void KeyStart();
 
 private:
 	FwGui::ImageButton* up;

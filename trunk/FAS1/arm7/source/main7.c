@@ -4,8 +4,6 @@
 #include <nds/arm7/touch.h>
 #include <nds/arm7/clock.h>
 
-#include <dswifi7.h>
-
 #include <nds.h>
 #include "boot7.h"
 
@@ -115,43 +113,6 @@ void VblankHandler(void) {
 
 }
 
-// callback to allow wifi library to notify arm9
-void arm7_synctoarm9()
-{
-	IPC_SendSync(0);
-}
-
-// interrupt handler to allow incoming notifications from arm9
-void arm7_ipc_sync()
-{
-	Wifi_Sync();
-}
- 
-void SetupWifi()
-{
-	irqSet(IRQ_WIFI, (void(*)())Wifi_Interrupt); // set up wifi interrupt
-	irqEnable(IRQ_WIFI);
-
-	// sync with arm9 and init wifi
-	u32 fifo_temp;   
-
-	while(1) { // wait for magic number
-		while(REG_IPC_FIFO_CR&IPC_FIFO_RECV_EMPTY) swiWaitForVBlank();
-		fifo_temp=REG_IPC_FIFO_RX;
-		if(fifo_temp==0x12345678) break;
-	}
-	while(REG_IPC_FIFO_CR&IPC_FIFO_RECV_EMPTY) swiWaitForVBlank();
-	fifo_temp=REG_IPC_FIFO_RX; // give next value to wifi_init
-	Wifi_Init(fifo_temp);
-
-	irqSet(IRQ_IPC_SYNC, arm7_ipc_sync);
-	irqEnable(IRQ_IPC_SYNC);
-	REG_IPC_SYNC = IPC_SYNC_IRQ_ENABLE;
-
-	Wifi_SetSyncHandler(arm7_synctoarm9); // allow wifi lib to notify arm9
-	// arm7 wifi init complete
-}
-
 int main(int argc, char ** argv)
 {
 	REG_IPC_FIFO_CR = IPC_FIFO_ENABLE | IPC_FIFO_SEND_CLEAR; // enable & prepare fifo asap
@@ -175,24 +136,19 @@ int main(int argc, char ** argv)
 	irqSet(IRQ_VCOUNT, VcountHandler);
 	irqEnable(IRQ_VBLANK | IRQ_VCOUNT);
 
-	SetupWifi();
-
 	// keep the ARM7 out of main RAM
 	while(true)
 	{
 		swiWaitForVBlank();
-		Wifi_Update();
 
 		if (IPC->mailData == 1)
 		{
 			irqDisable(IRQ_ALL);
-			Wifi_Deinit();
 			BootDsGbaARM7();
 		}
 		else if (IPC->mailData == 2)
 		{
 			irqDisable(IRQ_ALL);
-			Wifi_Deinit();
 			BootGbaARM7();
 		}
 	}
