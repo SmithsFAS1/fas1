@@ -1,5 +1,4 @@
 #include <nds.h>
-#include <dswifi9.h>
 
 void ResetVideo()
 {
@@ -22,8 +21,6 @@ void ResetVideo()
 
 void BootDsGbaARM9()
 {
-	Wifi_DisconnectAP();
-	Wifi_DisableWifi();
 	REG_IME = 0;
 	ResetVideo();
 
@@ -44,8 +41,6 @@ void BootDsGbaARM9()
 
 void BootGbaARM9()
 {
-	Wifi_DisconnectAP();
-	Wifi_DisableWifi();
 	REG_IME = 0;
 	ResetVideo();
 

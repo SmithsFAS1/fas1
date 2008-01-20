@@ -92,6 +92,12 @@ void BootDialog::KeyRight()
 {
 }
 
+void BootDialog::KeyStart()
+{
+	VisolySetFlashBaseAddress(0);
+	BootGbaARM9();
+}
+
 void BootDialog::ScanSlot1()
 {
 	struct stat st;
