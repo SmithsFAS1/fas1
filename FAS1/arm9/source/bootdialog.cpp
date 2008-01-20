@@ -92,12 +92,6 @@ void BootDialog::KeyRight()
 {
 }
 
-void BootDialog::KeyStart()
-{
-	VisolySetFlashBaseAddress(0);
-	BootGbaARM9();
-}
-
 void BootDialog::ScanSlot1()
 {
 	struct stat st;
@@ -210,13 +204,13 @@ void BootDialog::ControlClicked(Control* control)
 				printf("\e[u\e[0K%5u seconds", (time_left/60)+1);
 				vBlank();
 				scanKeys();
-				if(keysDown() & KEY_START) {
+				if(keysUp() & KEY_START) {
 					printf("\n");
 					WriteROM(theROM);
 					o = 0;
 					done = 1;
 				}
-				if(keysDown() & KEY_B) {
+				if(keysUp() & KEY_B) {
 					printf("\e[u\e[0K%5s\n", "Aborted!");
 					o = 0;
 					done = 1;

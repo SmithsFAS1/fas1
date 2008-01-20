@@ -170,8 +170,6 @@ void SaveDialog::ControlClicked(Control* control)
 		SaveItem* item = (SaveItem*)control->GetData();
 		DIR_ITER* dir;
 		dir = diropen ("/SAVES/"); //GBA directory on Slot-1
-		char * extension;
-	
 		if (dir) {
 		char thesave[300]; // to hold a full filename and string terminator
 		strcpy(thesave,"/Saves/");
@@ -194,6 +192,7 @@ void WriteSRAM(const char* filename)
 				printf("Press \"B\" to Cancel\n");
 				printf("Timeout: \e[s    0 seconds");
 				int o = 0;
+				int p = 0;
 				u16 time_left = 600; // 10 second countdown
 				s8 done = 0;
 		
@@ -202,7 +201,7 @@ void WriteSRAM(const char* filename)
 					printf("\e[u\e[0K%5u seconds", (time_left/60)+1);
 					vBlank();
 					scanKeys();
-					if(keysDown() & KEY_START) {
+					if(keysUp() & KEY_START) {
 						printf("\nWriting Bank 1\n");
 						printf("Written: \e[s    0 k");
 						while (start < bank1 - 1) {
@@ -215,10 +214,12 @@ void WriteSRAM(const char* filename)
 						}
 					o = 0;
 					done = 1;
+					p = 0;
 					}
-					if(keysDown() & KEY_B) {
+					if(keysUp() & KEY_B) {
 						printf("\e[u\e[0K%5s\n", "Aborted!");
 						o = 0;
+						p = 1;
 						done = 1;
 					}
 					time_left--;
@@ -226,6 +227,7 @@ void WriteSRAM(const char* filename)
 					if(time_left == 0) {
 						done = 1;
 						o = 1;
+						p = 1;
 					} 
 				}
 			if (o) {
@@ -233,7 +235,9 @@ void WriteSRAM(const char* filename)
 			}
 
 			fclose (savedata);
-			printf("\nDone!\n");
+			if ((!p) && done) {
+				printf("\nDone!\n");
+				}
 			}
 }
 

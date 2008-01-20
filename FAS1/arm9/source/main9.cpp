@@ -76,7 +76,7 @@ int main()
 			{
 				//nada for X
 			}
-			if(keysUp() & KEY_Y)
+			if(keysDown() & KEY_Y)
 			{
 				//Dialog Switch
 				if (di%2 == 0) { 
@@ -94,14 +94,14 @@ int main()
 				dialog2->Repaint();
 				}
 			}
-			//Back up SRAM Bank 1 with SELECT - Smiths
-			if(keysDown() & KEY_SELECT)
+			if(keysUp() & KEY_SELECT)	 //Back up SRAM Bank 1 with SELECT - Smiths
 			{
 				BackupSRAM();
 			}
-			if(keysDown() & KEY_START)
+			if(keysUp() & KEY_START) //Boot GBA cartridge
 			{
-				//Start is handled in bootdialog.cpp
+				VisolySetFlashBaseAddress(0);
+				BootGbaARM9();
 			}
 			swiWaitForVBlank();
 		}
