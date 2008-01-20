@@ -72,7 +72,7 @@ int main()
 		while(true)
 		{
 			gui.Tick();
-			if((keysHeld() & KEY_START | KEY_L | KEY_R) == (KEY_START | KEY_L | KEY_R))
+			if((keysHeld() & KEY_START) && (keysHeld() & KEY_L) && (keysHeld() & KEY_R))
 			{
 				VisolySetFlashBaseAddress(0);
 				BootGbaARM9();
