@@ -27,7 +27,7 @@ Also, it allows you to backup Bank 1 of your SRAM (64KB) to the cartridge in Slo
 History
 ------
 v1.4 - Boot me Back
-+ Added Slot-2 booting with START
++ Added Slot-2 booting with L+R+START
 
 v1.2 - SRAM Sub-menu
 + SRAM restoring added to separate menu
