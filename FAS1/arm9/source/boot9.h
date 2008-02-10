@@ -3,3 +3,4 @@
 void BootDsGbaARM9();
 void BootGbaARM9();
 void BootGBA();
+void gbaFrame(void);

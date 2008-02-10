@@ -152,6 +152,7 @@ void WriteROM(const char* filename) {
 
 	int fileposition = 0;
 	int endof = 0;
+	int i = 0;
 	File* file = FileFactory::OpenFile("/rom/000000", true); 	//use FileFactory to get File Information for writing to block 0
 	unsigned short lastReceivedBlock = 0;
 	unsigned int bytesReceived = 0;
@@ -164,10 +165,11 @@ void WriteROM(const char* filename) {
 		fread((u8*)buffer,1,8,rom); //read a byte of rom to buffer
 		lastReceivedBlock = (lastReceivedBlock + 1) & 0xFFFF;
 		file->Write(buffer, 8); //use FileFactory write command to write that byte
-		printf("\e[u\e[0K%5u k", bytesReceived >> 10);
+		if (i >= 262144) {printf("\e[u\e[0K%5u k", bytesReceived >> 10); i = 0;}
 		bytesReceived += length; //increase
 		fileposition += 8;
 		endof += 8;
+		i += 8;
 		fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
 	}
 	file->Close();

@@ -190,7 +190,7 @@ void BootDialog::ControlClicked(Control* control)
 			printf("%s\n", item->title);
 
 			//18 seconds per meg 8000000 1048576
-			double flashtime = ((b * 18)/60);
+			double flashtime = ((b * 9.75)/60);
 			printf("%.2f megs, about %.1f minutes\n", b, flashtime);
 			printf("Press \"B\" to Cancel\n");
 			printf("Timeout: \e[s    0 seconds");
