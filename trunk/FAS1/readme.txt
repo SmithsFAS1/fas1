@@ -20,7 +20,7 @@ About
 -----
 Old FlashAdvance cartridges for the Gameboy Advance used a Parallel Port device for flashing files to the cartridge from a PC. It's hard to find a newer PC (especially a laptop) with a Parallel Port. Based off of tftpds, FAS1 (FlashAdvance Slot-1) lets you place Gameboy Advance games in a folder "GBA" on a Slot-1 device (M3/R4/SuperCard/G6) and flash those files to a FlashAdvance 256 cartridge (only model tested) sitting in Slot-2 of your Nintendo DS.
 
-Like tftpds, it uses Jeff Frohwein's GBA FLinker tool to do the writing, writing at a rate of 9.5s/meg. A full file (32 megs) takes about 5.1 minutes.
+Like tftpds, it uses Jeff Frohwein's GBA FLinker tool to do the writing, writing at a rate of 9.5s/meg. A full file (32 megs) takes about 4.8 minutes.
 
 Also, it allows you to backup Bank 1 of your SRAM (64KB) to the cartridge in Slot-1. Restoring to the Flash Advance's Bank 1 is also supported.
 
