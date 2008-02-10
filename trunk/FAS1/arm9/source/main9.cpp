@@ -51,7 +51,7 @@ int main()
 	
 	FwGui::Driver gui;
 	
-	printf("FlashAdvance Slot1 Flasher v1.4\n");
+	printf("FlashAdvance Slot1 Flasher v1.5\n");
 	printf("-----------\n");
 	printf("Press SELECT to back up Bank 1\n");
 	printf("Press L+R+START to boot Slot-2\n");
