@@ -31,9 +31,9 @@ $(TARGET).ds.gba	: $(TARGET).nds gbamenu/gbamenu_mb.gba loader/loader.bin
 	gbafix $@
 	
 	#FCS image of a slot-1 device appended to DS.GBA = runs in DeSuMe with virtual libfat
-	#padbin 512 $(TARGET).ds.gba
-	#cat $(TARGET).ds.gba fcs.img > $(TARGET)_fs.ds.gba
-	#dlditool fcsr.dldi $(TARGET)_fs.ds.gba
+	padbin 512 $(TARGET).ds.gba
+	cat $(TARGET).ds.gba fcs.img > $(TARGET)_fs.ds.gba
+	dlditool fcsr.dldi $(TARGET)_fs.ds.gba
 	
 #---------------------------------------------------------------------------------
 $(TARGET).nds	:	$(TARGET).arm7 $(TARGET).arm9
