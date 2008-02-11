@@ -193,6 +193,7 @@ void WriteSRAM(const char* filename)
 				printf("Timeout: \e[s    0 seconds");
 				int o = 0;
 				int p = 0;
+				int i = 0;
 				u16 time_left = 600; // 10 second countdown
 				s8 done = 0;
 		
@@ -210,7 +211,8 @@ void WriteSRAM(const char* filename)
 							memcpy(start, strbuffer, sizeof(strbuffer));
 							start += 8; //next byte, please
 							bytes += 8;
-							printf("\e[u\e[0K%5u k", bytes);
+							i+= 8;
+							if (i >= 4096) {printf("\e[u\e[0K%5u k", bytes); i=0;}
 						}
 					o = 0;
 					done = 1;

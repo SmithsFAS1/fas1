@@ -30,7 +30,7 @@ v1.5 - DABURU SUPIIDO!
 + Write rate cut to 9.5s/meg!!!
 + That's right... 2X SPEED!
 + Added GBA Frame support for L+R+START Booting
- - Place 16bit BMP file named GBAFRAME.BMP in the /GBA folder
+ - Place 15bit BMP file named GBAFRAME.BMP in the /GBA folder
 
 v1.4 - Boot me Back
 + Added Slot-2 booting with L+R+START
@@ -90,3 +90,6 @@ JustBurn
 
 AceKard Team	       If I wasn't adding FAS1 support to the AceKard GUI, I wouldn't
  		       have altered the GUI updating speed and noticed the increase
+
+AceKard Contributors   All the random source modifications you all made greatly helped
+		       in adding more to this program

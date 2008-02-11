@@ -120,7 +120,7 @@ void BackupSRAM() {
 	FILE * savedata = fopen ("/saves/bank1.sav", "wb");
 	printf("\nBacking up Bank 1\n");
 	u8* start = SRAM_START; //Beginning of SRAM
-	int bytes = 0;
+	int bytes = 0; int i = 0;
 	u8* bank1 = SRAM_START+65535; //64KB = bank1 (rest need bank switching I believe)
 	u8* end = SRAM_END; //unused, but eventually (hopefully) map to end of SRAM for proper 256KB dump
 	char strbuffer[8]; //only likes to work in blocks of 8 (1 byte at a time!)
@@ -131,7 +131,8 @@ void BackupSRAM() {
 		fwrite((u8*)strbuffer, 1, sizeof(strbuffer), savedata); //1 byte at a time, whee!
 		start += 8; //next byte, please
 		bytes += 8;
-		printf("\e[u\e[0K%5u k", bytes);
+		i += 8;
+		if (i >= 4096) {printf("\e[u\e[0K%5u k", bytes); i=0;}
 	}
 	fclose (savedata);
 	printf("\nDone!\n");

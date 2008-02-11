@@ -40,15 +40,22 @@ void BootDsGbaARM9()
 
 void BootGbaARM9()
 {
+	if(((PERSONAL_DATA *)0x023FFC80)->_user_data.gbaScreen) {
+            REG_POWERCNT &= ~POWER_SWAP_LCDS;
+    }
+    else {
+            REG_POWERCNT |= POWER_SWAP_LCDS;
+    }
+	gbaFrame();
+/*	
 	REG_IME = 0;
 	ResetVideo();
-	gbaFrame();
 	// http://nocash.emubase.de/gbatek.htm#dsbackwardscompatiblegbamode
 	REG_EXMEMCNT |= 0x8080;     // ARM7 has access to GBA cart
 	REG_POWERCNT = POWER_SWAP_LCDS | POWER_LCD | POWER_2D_A;
 	REG_EXMEMCNT &= ~0x4000;    // set Async Main Memory mode
 	// notify arm7
-	IPC->mailData = 2;
+*/	IPC->mailData = 2;
 	// halt indefinitly, since irqs are disabled
 	swiWaitForIRQ();
 }
