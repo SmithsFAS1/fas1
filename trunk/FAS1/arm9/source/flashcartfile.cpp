@@ -25,12 +25,22 @@ FlashCartFile::FlashCartFile(const char* filename, bool write)
 	sscanf(filename, "%x/%n", &offset, &end);
 	if(end == 0)
 	{
+		printf("\nUnknown offset\n");
 		throw "Unknown offset";
 	}
+	if (!nintendo){
+		if((offset & FLASHCART_ERASE_BLOCK_SIZE_MASK) != 0)
+		{
+			printf("\nUnsupported offset\n");
+			throw "Unsupported offset";
+		}
+	}else{
+		if((offset & NOA_FLASHCART_ERASE_BLOCK_SIZE_MASK) != 0)
+		{
+			printf("\nUnsupported offset\n");
+			throw "Unsupported offset";
+		}
 
-	if((offset & FLASHCART_ERASE_BLOCK_SIZE_MASK) != 0)
-	{
-		throw "Unsupported offset";
 	}
 
 	printf("Writing at offset 0x%x\n", offset);
@@ -57,7 +67,7 @@ void FlashCartFile::DetectFlashCart()
 	SetVisolyFlashRWMode();
 	
 	printf("Detecting flash type:\n");
-	bool isVisolyTurbo = false;
+	visoly = false;
 	nintendo = false;
 	int type = CartTypeDetect();
 	switch(type)
@@ -66,27 +76,23 @@ void FlashCartFile::DetectFlashCart()
 	case 0x17 : printf ("  FA 64M\n");  break;
 	case 0x18 : printf ("  FA 128M\n"); break;
 	case 0x2e : printf ("  Standard ROM\n");         break;
-	case 0x96 : printf ("  Turbo FA 64M\n");  isVisolyTurbo=1; break;
-	case 0x97 : printf ("  Turbo FA 128M\n"); isVisolyTurbo=1; break;
-	case 0x98 : printf ("  Turbo FA 256M\n"); isVisolyTurbo=1; break;
+	case 0x96 : printf ("  Turbo FA 64M\n");  visoly=1; break;
+	case 0x97 : printf ("  Turbo FA 128M\n"); visoly=1; break;
+	case 0x98 : printf ("  Turbo FA 256M\n"); visoly=1; break;
 	case 0xdc : printf ("  Hudson\n");               break;
 	case 0xe2 : printf ("  Nintendo Flash Cart\n"); nintendo=1;  break;
 	default   : printf ("  Unknown\n");              break;
 	}
 
-	if(!isVisolyTurbo && !nintendo)
+	if(!visoly && !nintendo)
 	{
-		char e[1024];
-		sprintf(e, "Unsupported flashcart (0x%x)", type);
-		throw e;
-	}else{
-		char e[1024];
-		sprintf(e, "Flashcart Type: (0x%x)", type);
+		printf("\nUnsupported flashcart (0x%x)\n", type);
 	}
 }
 
 int FlashCartFile::Read(void* dest, int length)
 {
+	printf("\nReading from flash cart not supported.\n");
 	throw "Reading from flash cart not supported.";
 }
 
@@ -94,6 +100,7 @@ void FlashCartFile::Write(void* source, int length, bool nin)
 {
 	if(state != FILESTATE_WRITE)
 	{
+		printf("\nIllegal state.\n");
 		throw "Illegal state.";
 	}
 
@@ -165,16 +172,19 @@ void FlashCartFile::DoWrite(u8* source, int length, bool nin)
 		if(!result)
 		{
 			char e[1024];
-			sprintf(e, "Failed to write flash at 0x%x", (u32)filePtr);
+			printf("\nFailed to write flash at 0x%x\n", (u32)filePtr);
 			throw e;
 		}
 
-		result = memcmp(source, filePtr, length);
-		if(result != 0)
+		if (!nin)
 		{
-			char e[1024];
-			sprintf(e, "Verify failed at 0x%x", (u32)filePtr);
-			throw e;
+			result = memcmp(source, filePtr, length);
+			if(result != 0)
+			{
+				char e[1024];
+				printf("\nVerify failed at 0x%x\n", (u32)filePtr);
+				throw e;
+			}
 		}
 
 		filePtr += length;
@@ -189,6 +199,7 @@ void FlashCartFile::EraseNextBlock()
 	{
 		char e[1024];
 		sprintf(e, "Failed to erase flash at 0x%x", (u32)erasePtr);
+		printf("\nFailed to erase flash at 0x%x\n", (u32)erasePtr);
 		throw e;
 	}
 
@@ -204,6 +215,7 @@ void FlashCartFile::EraseNextBlockNintendo()
 	{
 		char e[1024];
 		sprintf(e, "Failed to erase flash at 0x%x", (u32)erasePtr);
+		printf("\nFailed to erase flash at 0x%x\n", (u32)erasePtr);
 		throw e;
 	}
 

@@ -17,6 +17,7 @@ File* FileFactory::OpenFile(const char* filename, bool write)
 	sscanf(filename, "%10[^/]/%n", dir, &offset);
 	if(offset == 0)
 	{
+		printf("Illegal path\n");
 		throw "Illegal path";
 	}
 
@@ -26,6 +27,7 @@ File* FileFactory::OpenFile(const char* filename, bool write)
 	}
 	else
 	{
+		printf("Unknown path\n");
 		throw "Unknown path";
 	}
 }

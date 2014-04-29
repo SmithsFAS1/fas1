@@ -27,6 +27,7 @@
 BootDialog* dialog = NULL;
 SaveDialog* dialog2 = NULL;
 bool nintendo = 0;
+bool visoly = 0;
 
 void WaitForKeyPress()
 {
@@ -130,28 +131,33 @@ void WriteROM(const char* filename) {
 	int i = 0;
 	File* file = FileFactory::OpenFile("/rom/000000", true); 	//use FileFactory to get File Information for writing to block 0, should set nintendo flag
 
-	unsigned short lastReceivedBlock = 0;
-	unsigned int bytesReceived = 0;
-	int blocksize = 8;
-	int length = blocksize;
-	char* buffer[8];
-	printf("Written: \e[s    0 k");
-	while(endof < lSize) //do Until it's written it all
+	if (nintendo || visoly)
 	{
-		fread((u8*)buffer,1,8,rom); //read a byte of rom to buffer
-		lastReceivedBlock = (lastReceivedBlock + 1) & 0xFFFF;
-		file->Write(buffer, 8, nintendo); //use FileFactory write command to write that byte
-		if (i >= 262144) {printf("\e[u\e[0K%5u k", bytesReceived >> 10); i = 0;}
-		bytesReceived += length; //increase
-		fileposition += 8;
-		endof += 8;
-		i += 8;
-		fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
-	}
-	file->Close(nintendo);
-	delete file;
-	fclose(rom);
-	printf("\nFile flashed successfully.\n");
+		unsigned short lastReceivedBlock = 0;
+		unsigned int bytesReceived = 0;
+		int blocksize = 8;
+		int length = blocksize;
+		printf("Written: \e[s    0 k");
+		while(endof < lSize) //do Until it's written it all
+		{
+			char* buffer[8];
+			fread((u8*)buffer,1,8,rom); //read a byte of rom to buffer
+			lastReceivedBlock = (lastReceivedBlock + 1) & 0xFFFF;
+			file->Write(buffer, 8, nintendo); //use FileFactory write command to write that byte
+			//if (i >= 262144) {printf("\e[u\e[0K%5u k", bytesReceived >> 10); i = 0;}
+			if (i >= 262144) {printf("\e[u\e[0K%10u k", bytesReceived >> 10); i = 0;}
+			bytesReceived += length; //increase
+			fileposition += 8;
+			endof += 8;
+			i += 8;
+			fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
+			delete[] buffer;
+		}
+		file->Close(nintendo);
+		delete file;
+		fclose(rom);
+		printf("\nFile flashed successfully.\n");
+		}
 	}
 }
 
