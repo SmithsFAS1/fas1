@@ -11,8 +11,7 @@ class File
 {
 public:
 	virtual ~File() {};
-
 	virtual int Read(void* dest, int length) = 0;
-	virtual void Write(void* source, int length) = 0;
-	virtual void Close() = 0;
+	virtual void Write(void* source, int length, bool nintendo) = 0;
+	virtual void Close(bool nintendo) = 0;
 };

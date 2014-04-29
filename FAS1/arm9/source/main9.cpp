@@ -26,6 +26,7 @@
 
 BootDialog* dialog = NULL;
 SaveDialog* dialog2 = NULL;
+bool nintendo = 0;
 
 void WaitForKeyPress()
 {
@@ -51,7 +52,7 @@ int main()
 	
 	FwGui::Driver gui;
 	
-	printf("FlashAdvance Slot1 Flasher v1.5\n");
+	printf("FlashAdvance Slot1 Flasher v1.6b\n");
 	printf("-----------\n");
 	printf("Press SELECT to back up Bank 1\n");
 	printf("Press L+R+START to boot Slot-2\n");
@@ -112,6 +113,48 @@ int main()
 	}
 }
 
+void WriteROM(const char* filename) {
+	FILE * rom = fopen (filename,"rb"); //open rom
+	if (!rom) {
+	printf("File %s not found!\n", filename);
+	} else {
+	
+	//File Size Get!
+	long lSize;	
+	fseek (rom , 0 , SEEK_END);
+	lSize = ftell (rom);
+	rewind (rom);
+
+	int fileposition = 0;
+	int endof = 0;
+	int i = 0;
+	File* file = FileFactory::OpenFile("/rom/000000", true); 	//use FileFactory to get File Information for writing to block 0, should set nintendo flag
+
+	unsigned short lastReceivedBlock = 0;
+	unsigned int bytesReceived = 0;
+	int blocksize = 8;
+	int length = blocksize;
+	char* buffer[8];
+	printf("Written: \e[s    0 k");
+	while(endof < lSize) //do Until it's written it all
+	{
+		fread((u8*)buffer,1,8,rom); //read a byte of rom to buffer
+		lastReceivedBlock = (lastReceivedBlock + 1) & 0xFFFF;
+		file->Write(buffer, 8, nintendo); //use FileFactory write command to write that byte
+		if (i >= 262144) {printf("\e[u\e[0K%5u k", bytesReceived >> 10); i = 0;}
+		bytesReceived += length; //increase
+		fileposition += 8;
+		endof += 8;
+		i += 8;
+		fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
+	}
+	file->Close(nintendo);
+	delete file;
+	fclose(rom);
+	printf("\nFile flashed successfully.\n");
+	}
+}
+
 //Get that first 64KB! - Smiths
 void BackupSRAM() {
 	DIR_ITER* dir;
@@ -137,45 +180,4 @@ void BackupSRAM() {
 	fclose (savedata);
 	printf("\nDone!\n");
 	printf("File: /Saves/bank1.sav on Slot1\n");	
-}
-
-void WriteROM(const char* filename) {
-	FILE * rom = fopen (filename,"rb"); //open rom
-	if (!rom) {
-	printf("File %s not found!\n", filename);
-	} else {
-	
-	//File Size Get!
-	long lSize;	
-	fseek (rom , 0 , SEEK_END);
-	lSize = ftell (rom);
-	rewind (rom);
-
-	int fileposition = 0;
-	int endof = 0;
-	int i = 0;
-	File* file = FileFactory::OpenFile("/rom/000000", true); 	//use FileFactory to get File Information for writing to block 0
-	unsigned short lastReceivedBlock = 0;
-	unsigned int bytesReceived = 0;
-	int blocksize = 8;
-	int length = blocksize;
-	char* buffer[8];
-	printf("Written: \e[s    0 k");
-	while(endof < lSize) //do Until it's written it all
-	{
-		fread((u8*)buffer,1,8,rom); //read a byte of rom to buffer
-		lastReceivedBlock = (lastReceivedBlock + 1) & 0xFFFF;
-		file->Write(buffer, 8); //use FileFactory write command to write that byte
-		if (i >= 262144) {printf("\e[u\e[0K%5u k", bytesReceived >> 10); i = 0;}
-		bytesReceived += length; //increase
-		fileposition += 8;
-		endof += 8;
-		i += 8;
-		fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
-	}
-	file->Close();
-	delete file;
-	fclose(rom);
-	printf("\nFile flashed successfully.\n");
-	}
 }
