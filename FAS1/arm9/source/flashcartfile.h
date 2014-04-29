@@ -41,4 +41,5 @@ private:
 };
 
 extern bool nintendo;
+extern bool visoly;
 
