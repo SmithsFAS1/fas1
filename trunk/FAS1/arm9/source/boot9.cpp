@@ -1,4 +1,6 @@
 #include <nds.h>
+#include <malloc.h>
+#include <string.h>
 #include "bmp15.h"
 #include "boot9.h"
 

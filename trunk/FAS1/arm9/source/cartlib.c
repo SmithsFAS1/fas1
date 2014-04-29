@@ -298,13 +298,22 @@ u32 EraseNintendoFlashBlocks (u32 StartAddr, u32 BlockCount)
       {
       i = StartAddr + (k * 32768 * _MEM_INC);
 
+		//printf("EraseNintendoBlocks:i-0x%x|bc-0x%x\n", i, BlockCount);
+		//printf("EraseNintendoBlocks:j-0x%x|k-0x%x\n", j, k);
+
       do { READ_NTURBO_SR(i,j); } while ((j & 0x80)==0);
       WriteFlash (i, SHARP28F_BLOCKERASE);          // Erase a 64k byte block
       WriteFlash (i, SHARP28F_CONFIRM);             // Comfirm block erase
       }
 
+		//printf("for loop exited[i:%i|bc:0x%x]\n", i, BlockCount);
+   
    do { READ_NTURBO_SR(i,j); } while ((j & 0x80)==0);
+	  //printf("Passed final READ_NTURBO section\n");
+
    WriteFlash (i, SHARP28F_READARRAY);             // Set normal read mode
+	  //printf("Passed SHARP28F_READARRAY section\n");
+
    return(1);
    }
 #endif
@@ -500,6 +509,11 @@ u32 WriteNintendoFlashCart (u32 SrcAddr, u32 FlashAddr, u32 Length)
 
    while (LoopCount < Length)
       {
+		//printf("WNFC:i-0x%x|l-0x%x\n",LoopCount,Length);
+		//printf("WNFC:fa-0x%x|srca-0x%x\n",FlashAddr,SrcAddr);
+		//printf("\n");
+
+
       do { READ_NTURBO_SR(FlashAddr,j); } while ((j & 0x80)==0);
 
       WriteFlash (FlashAddr, SHARP28F_WORDWRITE);
@@ -513,6 +527,7 @@ u32 WriteNintendoFlashCart (u32 SrcAddr, u32 FlashAddr, u32 Length)
 
    WriteFlash (_CART_START, SHARP28F_READARRAY);
 //   CTRL_PORT_0;
+
    return (1);
    }
 #endif
