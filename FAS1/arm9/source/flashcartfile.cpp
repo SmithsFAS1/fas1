@@ -96,12 +96,12 @@ int FlashCartFile::Read(void* dest, int length)
 	throw "Reading from flash cart not supported.";
 }
 
-void FlashCartFile::Write(void* source, int length, bool nin)
+bool FlashCartFile::Write(void* source, int length, bool nin)
 {
 	if(state != FILESTATE_WRITE)
 	{
 		printf("\nIllegal state.\n");
-		throw "Illegal state.";
+		return 0;
 	}
 
 	if (!nin){
@@ -147,13 +147,14 @@ void FlashCartFile::Write(void* source, int length, bool nin)
 		memcpy(noabuffer + bufferFill, dataPtr, tempLength);
 		bufferFill += tempLength;	
 	}
+	return 1;
 }
 
 void FlashCartFile::Close(bool nin)
 {
-	if(state == FILESTATE_WRITE && bufferFill > 0)
+	if(state == FILESTATE_WRITE && bufferFill > 0 && nin)
 	{
-		(!nin) ? DoWrite(buffer, FLASHCART_WRITE_BLOCK_SIZE, nin) : DoWrite(noabuffer, NOA_FLASHCART_WRITE_BLOCK_SIZE, nin);
+		DoWrite(buffer, FLASHCART_WRITE_BLOCK_SIZE, nin);
 	}
 	state = FILESTATE_CLOSED;
 }
@@ -171,9 +172,8 @@ void FlashCartFile::DoWrite(u8* source, int length, bool nin)
 		int result = (!nin) ? WriteTurboFACart((u32)source,(u32)filePtr,blockCount) : WriteNintendoFlashCart((u32)source,(u32)filePtr,blockCount);
 		if(!result)
 		{
-			char e[1024];
 			printf("\nFailed to write flash at 0x%x\n", (u32)filePtr);
-			throw e;
+			state = FILESTATE_CLOSED;
 		}
 
 		if (!nin)
@@ -181,9 +181,8 @@ void FlashCartFile::DoWrite(u8* source, int length, bool nin)
 			result = memcmp(source, filePtr, length);
 			if(result != 0)
 			{
-				char e[1024];
 				printf("\nVerify failed at 0x%x\n", (u32)filePtr);
-				throw e;
+				state = FILESTATE_CLOSED;
 			}
 		}
 
@@ -197,10 +196,8 @@ void FlashCartFile::EraseNextBlock()
 		1);
 	if(!result)
 	{
-		char e[1024];
-		sprintf(e, "Failed to erase flash at 0x%x", (u32)erasePtr);
 		printf("\nFailed to erase flash at 0x%x\n", (u32)erasePtr);
-		throw e;
+		state = FILESTATE_CLOSED;
 	}
 
 	erasePtr += FLASHCART_ERASE_BLOCK_SIZE;

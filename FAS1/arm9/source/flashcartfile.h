@@ -22,7 +22,7 @@ public:
 	void RomFlash(const char* filename, bool write);
 
 	virtual int Read(void* dest, int length);
-	virtual void Write(void* source, int length, bool nin);
+	virtual bool Write(void* source, int length, bool nin);
 	virtual void Close(bool nin);
 	u8* filePtr;
 
@@ -33,8 +33,8 @@ private:
 	void EraseNextBlockNintendo();
 
 	u8 noabuffer[NOA_FLASHCART_WRITE_BLOCK_SIZE];
-
 	u8 buffer[FLASHCART_WRITE_BLOCK_SIZE];
+
 	int bufferFill;
 	u8* erasePtr;
 	FileState state;
