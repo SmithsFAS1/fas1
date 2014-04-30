@@ -127,7 +127,7 @@ void WriteROM(const char* filename) {
 	rewind (rom);
 
 	int fileposition = 0;
-	int endof = 0;
+	long endof = 0;
 	int i = 0;
 	File* file = FileFactory::OpenFile("/rom/000000", true); 	//use FileFactory to get File Information for writing to block 0, should set nintendo flag
 
@@ -137,26 +137,30 @@ void WriteROM(const char* filename) {
 		unsigned int bytesReceived = 0;
 		int blocksize = 8;
 		int length = blocksize;
-		printf("Written: \e[s    0 k");
-		while(endof < lSize) //do Until it's written it all
+		printf("Written: \e[s         0 k");
+		char* buffer[blocksize];
+		while(endof <= lSize) //do Until it's written it all
 		{
-			char* buffer[8];
+			if (i >= 262144 && endof<16777168) {
+				printf("\e[u\e[0K%10u k %u|%u", bytesReceived >> 10,endof,lSize);
+				i = 0;
+			}
 			fread((u8*)buffer,1,8,rom); //read a byte of rom to buffer
 			lastReceivedBlock = (lastReceivedBlock + 1) & 0xFFFF;
-			file->Write(buffer, 8, nintendo); //use FileFactory write command to write that byte
-			//if (i >= 262144) {printf("\e[u\e[0K%5u k", bytesReceived >> 10); i = 0;}
-			if (i >= 262144) {printf("\e[u\e[0K%10u k", bytesReceived >> 10); i = 0;}
-			bytesReceived += length; //increase
-			fileposition += 8;
-			endof += 8;
-			i += 8;
-			fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
-			delete[] buffer;
+			
+			if ((file->Write(buffer, blocksize, nintendo)) == 0) { endof = lSize+200; } //if any errors in file writing, dirty abort
+			bytesReceived += blocksize; //increase
+			fileposition += blocksize;
+			endof += blocksize;
+			i += blocksize;
+			if (!(endof>=lSize))
+				fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
+			//if (endof>=16777168) printf("\n>16M:%lu|t:%lu",endof,lSize);
 		}
 		file->Close(nintendo);
 		delete file;
 		fclose(rom);
-		printf("\nFile flashed successfully.\n");
+		(endof>=lSize+200) ? printf("\nError Flashing File.\n") : printf("\nFile flashed successfully.\n");
 		}
 	}
 }
