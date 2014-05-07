@@ -7,5 +7,4 @@ class FileFactory
 public:
 	static File* OpenFile(const char* filename, bool write);
 };
-extern bool nintendo;
-extern bool visoly;
+extern int carttype;

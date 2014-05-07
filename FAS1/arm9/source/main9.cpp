@@ -26,8 +26,7 @@
 
 BootDialog* dialog = NULL;
 SaveDialog* dialog2 = NULL;
-bool nintendo = 0;
-bool visoly = 0;
+int carttype = 0;
 
 void WaitForKeyPress()
 {
@@ -53,7 +52,7 @@ int main()
 	
 	FwGui::Driver gui;
 	
-	printf("FlashAdvance Slot1 Flasher v1.6b\n");
+	printf("FlashAdvance Slot1 Flasher v1.7b\n");
 	printf("-----------\n");
 	printf("Press SELECT to back up Bank 1\n");
 	printf("Press L+R+START to boot Slot-2\n");
@@ -131,7 +130,7 @@ void WriteROM(const char* filename) {
 	int i = 0;
 	File* file = FileFactory::OpenFile("/rom/000000", true); 	//use FileFactory to get File Information for writing to block 0, should set nintendo flag
 
-	if (nintendo || visoly)
+	if (carttype!=0)
 	{
 		unsigned short lastReceivedBlock = 0;
 		unsigned int bytesReceived = 0;
@@ -141,23 +140,23 @@ void WriteROM(const char* filename) {
 		char* buffer[blocksize];
 		while(endof <= lSize) //do Until it's written it all
 		{
-			if (i >= 262144 && endof<16777168) {
+			if (i >= 262144) {
 				printf("\e[u\e[0K%10u k %u|%u", bytesReceived >> 10,endof,lSize);
 				i = 0;
 			}
 			fread((u8*)buffer,1,8,rom); //read a byte of rom to buffer
 			lastReceivedBlock = (lastReceivedBlock + 1) & 0xFFFF;
 			
-			if ((file->Write(buffer, blocksize, nintendo)) == 0) { endof = lSize+200; } //if any errors in file writing, dirty abort
+			if ((file->Write(buffer, blocksize, carttype)) == 0) { endof = lSize+200; } //if any errors in file writing, dirty abort
 			bytesReceived += blocksize; //increase
 			fileposition += blocksize;
 			endof += blocksize;
 			i += blocksize;
-			if (!(endof>=lSize))
+			if(fileposition<=lSize)
 				fseek (rom, fileposition, SEEK_SET); //set starting point of rom to next byte
-			//if (endof>=16777168) printf("\n>16M:%lu|t:%lu",endof,lSize);
+			if (endof==16777208 && carttype==2 && lSize==16777216) endof=lSize+1; //official NOA carts don't get last 8 bytes of 16MB file, even on flinker for PC
 		}
-		file->Close(nintendo);
+		file->Close(carttype);
 		delete file;
 		fclose(rom);
 		(endof>=lSize+200) ? printf("\nError Flashing File.\n") : printf("\nFile flashed successfully.\n");

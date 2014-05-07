@@ -13,6 +13,11 @@
 #define NOA_FLASHCART_ERASE_BLOCK_SIZE 0x10000 //64KB erasing chunks - NOA
 #define NOA_FLASHCART_ERASE_BLOCK_SIZE_MASK 0xffff
 
+#define NOA256_FLASHCART_WRITE_BLOCK_SIZE 0x1 //1x blocks - NOA256
+#define NOA256_FLASHCART_WRITE_BLOCK_MASK 0x0
+#define NOA256_FLASHCART_ERASE_BLOCK_SIZE 0x10000 //64KB erasing chunks - NOA
+#define NOA256_FLASHCART_ERASE_BLOCK_SIZE_MASK 0xffff
+
 class FlashCartFile : public File
 {
 public:
@@ -22,17 +27,19 @@ public:
 	void RomFlash(const char* filename, bool write);
 
 	virtual int Read(void* dest, int length);
-	virtual bool Write(void* source, int length, bool nin);
-	virtual void Close(bool nin);
+	virtual bool Write(void* source, int length, int carttype);
+	virtual void Close(int carttype);
 	u8* filePtr;
 
 private:
 	void DetectFlashCart();
-	void DoWrite(u8* source, int length, bool nin);
+	void DoWrite(u8* source, int length, int carttype);
 	void EraseNextBlock();
 	void EraseNextBlockNintendo();
+	void EraseNextBlockNintendo256();
 
 	u8 noabuffer[NOA_FLASHCART_WRITE_BLOCK_SIZE];
+	u8 noa256buffer[NOA256_FLASHCART_WRITE_BLOCK_SIZE];
 	u8 buffer[FLASHCART_WRITE_BLOCK_SIZE];
 
 	int bufferFill;
@@ -40,6 +47,5 @@ private:
 	FileState state;
 };
 
-extern bool nintendo;
-extern bool visoly;
+extern int carttype;
 

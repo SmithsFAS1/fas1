@@ -177,9 +177,11 @@ void WriteRepeat (int addr, int data, int count)
  void SetVisolyBackupRWMode (int i) CL_SECTION;
  u8 CartTypeDetect (void) CL_SECTION;
  u32 EraseNintendoFlashBlocks (u32 StartAddr, u32 BlockCount) CL_SECTION;
+ u32 EraseNintendoFlashBlocks256 (u32 StartAddr, u32 BlockCount) CL_SECTION;
  u32 EraseNonTurboFABlocks (u32 StartAddr, u32 BlockCount) CL_SECTION;
  u32 EraseTurboFABlocks (u32 StartAddr, u32 BlockCount) CL_SECTION;
  u32 WriteNintendoFlashCart (u32 SrcAddr, u32 FlashAddr, u32 Length) CL_SECTION;
+ u32 WriteNintendoFlashCart256 (u32 SrcAddr, u32 FlashAddr, u32 Length) CL_SECTION;
  u32 WriteNonTurboFACart (u32 SrcAddr, u32 FlashAddr, u32 Length) CL_SECTION;
  u32 WriteTurboFACart (u32 SrcAddr, u32 FlashAddr, u32 Length) CL_SECTION;
   #endif
@@ -241,6 +243,8 @@ u8 CartTypeDetect (void)
                                             // Works for intel 28F640J3A & Sharp LH28F320BJE.
    Manuf = ReadFlash(_CART_START);
    Device = ReadFlash(_CART_START+_MEM_INC);
+	printf("Manuf:i-0x%x\n", Manuf);
+	printf("Device:i-0x%x\n", Device);
 
    switch (Manuf)
       {
@@ -275,6 +279,9 @@ u8 CartTypeDetect (void)
          switch (Device)
             {
             case 0xe2:
+               type = Device;
+               break;
+            case 0xb0:
                type = Device;
                break;
             }
@@ -316,6 +323,28 @@ u32 EraseNintendoFlashBlocks (u32 StartAddr, u32 BlockCount)
 
    return(1);
    }
+
+u32 EraseNintendoFlashBlocks256 (u32 StartAddr, u32 BlockCount)
+   {
+   int i=0;
+   int j,k;
+
+   for (k = 0; k < BlockCount; k++)
+      {
+      i = StartAddr + (k * 32768 * _MEM_INC);
+
+	  do { READ_NTURBO_SR(i,j); } while ((j & 0x80)==0);
+      WriteFlash (i, SHARP28F_BLOCKERASE);          // Erase a 64k byte block
+      WriteFlash (i, SHARP28F_CONFIRM);             // Comfirm block erase
+      }
+  
+   do { READ_NTURBO_SR(i,j); } while ((j & 0x80)==0);
+
+   WriteFlash (i, SHARP28F_READARRAY);             // Set normal read mode
+
+   return(1);
+   }
+   
 #endif
 
 #ifdef NONTURBO_FA_SUPPORT
@@ -530,6 +559,36 @@ u32 WriteNintendoFlashCart (u32 SrcAddr, u32 FlashAddr, u32 Length)
 
    return (1);
    }
+
+u32 WriteNintendoFlashCart256 (u32 SrcAddr, u32 FlashAddr, u32 Length)
+   {
+   int j;
+   int LoopCount = 0;
+
+   while (LoopCount < Length)
+      {
+		//printf("WNFC:i-0x%x|l-0x%x\n",LoopCount,Length);
+		//printf("WNFC:fa-0x%x|srca-0x%x\n",FlashAddr,SrcAddr);
+		//printf("\n");
+
+
+      do { READ_NTURBO_SR(FlashAddr,j); } while ((j & 0x80)==0);
+
+      WriteFlash (FlashAddr, SHARP28F_WORDWRITE);
+      WriteFlash (FlashAddr, *(u16 *)SrcAddr);
+      SrcAddr += 2;
+      FlashAddr += _MEM_INC;
+      LoopCount++;
+      }
+
+   do { READ_NTURBO_SR(FlashAddr,j); } while ((j & 0x80)==0);
+
+   WriteFlash (_CART_START, SHARP28F_READARRAY);
+//   CTRL_PORT_0;
+
+   return (1);
+   }
+   
 #endif
 
 #ifdef NONTURBO_FA_SUPPORT
