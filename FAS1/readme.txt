@@ -1,4 +1,4 @@
-FAS1 (FlashAdvance Slot-1) v1.5
+FAS1 (FlashAdvance Slot-1) v1.7b
 by Smiths (smiths/AT/emuholic/DOT/com)
 http://www.emuholic.com
 Source SVN @ http://code.google.com/p/fas1/
@@ -20,12 +20,18 @@ About
 -----
 Old FlashAdvance cartridges for the Gameboy Advance used a Parallel Port device for flashing files to the cartridge from a PC. It's hard to find a newer PC (especially a laptop) with a Parallel Port. Based off of tftpds, FAS1 (FlashAdvance Slot-1) lets you place Gameboy Advance games in a folder "GBA" on a Slot-1 device (M3/R4/SuperCard/G6) and flash those files to a FlashAdvance 256 cartridge (only model tested) sitting in Slot-2 of your Nintendo DS.
 
-Like tftpds, it uses Jeff Frohwein's GBA FLinker tool to do the writing, writing at a rate of 9.5s/meg. A full file (32 megs) takes about 4.8 minutes.
+Like tftpds, it uses Jeff Frohwein's GBA FLinker tool to do the writing, writing at a rate of 9.5s/meg (Flash Advance, Nintendo cartridges are slower). A full file (32 megs) takes about 4.8 minutes.
 
 Also, it allows you to backup Bank 1 of your SRAM (64KB) to the cartridge in Slot-1. Restoring to the Flash Advance's Bank 1 is also supported.
 
 History
 ------
+v1.7b - Nintendo 128MB Support
++ Got 128MB Nintendo AGB Dev Cards working
++ Many thanks to nono14 for testing
++ Attempted to get 256MB Nintendo cards working, only erasing is possible due to lack of documentation
++ Code cleanup and optimization since it hadn't been touched in 6 years
+
 v1.5 - DABURU SUPIIDO!
 + Write rate cut to 9.5s/meg!!!
 + That's right... 2X SPEED!
