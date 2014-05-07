@@ -3,6 +3,7 @@
 #include <nds.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 #include "font.h"
 #include "gunship_12_bin.h"
 #include "vera_11_bin.h"
